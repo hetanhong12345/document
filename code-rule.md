@@ -406,8 +406,8 @@ const Item = {
 * 对象属性值的简写方式要和声明式的方式分组
 
 ```js
-const job = 'FrontEnd'
-const department = 'JDC'
+let job = 'FrontEnd'
+let department = 'JDC'
 // bad
 const Item = {
   sex: 'male',
@@ -427,19 +427,21 @@ const Item = {
 * 请使用字面量值创建数组
 ```js
 // bad
-const Items = new Array()
+let Items = new Array()
 // good
-const items = []
+let items = []
 ```
 * 向数组中添加元素时，请使用 push 方法
 ```js
-const items = []
+let items = []
 // bad
 items[items.length] = 'test'
 // good
 items.push('test')
+
 ```
 * 使用拓展运算符 ... 复制数组
+
 ```js
 // bad
 let items = []
@@ -457,7 +459,7 @@ itemsCopy = [...items]
 ```js
 // good
 [1, 2, 3].map(x => {
-  const y = x + 1
+  let y = x + 1
   return x * y
 })
 // good
@@ -471,13 +473,13 @@ itemsCopy = [...items]
 ```js
 // bad
 function getFullName (user) {
-  const firstName = user.firstName
-  const lastName = user.lastName
+  let firstName = user.firstName
+  let lastName = user.lastName
   return `${firstName} ${lastName}`
 }
 // good
 function getFullName (user) {
-  const { firstName, lastName } = user
+  let { firstName, lastName } = user
   return `${firstName} ${lastName}`
 }
 // better
@@ -488,33 +490,34 @@ function getFullName ({ firstName, lastName }) {
 
 * 当需要使用数组的多个值时，请同样使用解构赋值
 ```js
-const arr = [1, 2, 3, 4]
+let arr = [1, 2, 3, 4]
 // bad
-const first = arr[0]
-const second = arr[1]
+let first = arr[0]
+let second = arr[1]
 // good
-const [first, second] = arr
+let [first, second] = arr
 
 ```
 
 
 * 字符串统一使用单引号的形式 ''
+
 ```js
 // bad
-const department = "JDC"
+let department = "JDC"
 // good
-const department = 'JDC'
+let department = 'JDC'
 ```
 
 * 程序化生成字符串时，请使用模板字符串
 ```js
-const test = 'test'
+let test = 'test'
 // bad
-const str = ['a', 'b', test].join()
+let str = ['a', 'b', test].join()
 // bad
-const str = 'a' + 'b' + test
+let str = 'a' + 'b' + test
 // good
-const str = `ab${test}`
+let str = `ab${test}`
 ```
 
 
@@ -522,7 +525,7 @@ const str = `ab${test}`
 ```js
 // bad
 function test () {
-  const args = Array.prototype.slice.call(arguments)
+  let args = Array.prototype.slice.call(arguments)
   return args.join('')
 }
 // good
