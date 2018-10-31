@@ -109,7 +109,15 @@ use(fn) {
  ```js
  function Router(opts) {
   ...
-  this.methods = this.opts.methods || []
+  this.methods = this.opts.methods || [
+    'HEAD',
+    'OPTIONS',
+    'GET',
+    'PUT',
+    'PATCH',
+    'POST',
+    'DELETE'
+  ];
   this.stack = []; // ？？
 };
 ```
@@ -175,6 +183,28 @@ use(fn) {
   dispatch.router = this;
 
   return dispatch;
+};
+ 
+ ```
+ * router.allowedMethods(),检查请求方法是否允许
+ 
+ ```js
+ Router.prototype.allowedMethods = function (options) {
+  options = options || {};
+  var implemented = this.methods;
+
+  return function allowedMethods(ctx, next) {
+    return next().then(function() {
+        var allowed = {};
+        ...
+        // 请求方法不被允许
+        if (!~implemented.indexOf(ctx.method)) {
+          ...
+          ctx.status = 501;
+          ctx.set('Allow', allowedArr.join(', '));
+      }
+    });
+  };
 };
  
  ```
