@@ -99,3 +99,113 @@ use(fn) {
 }
  
  ```
+ 
+ ## koa-router
+ 
+ ### 基本特性
+ 
+ * router 数据格式
+ 
+ ```js
+ function Router(opts) {
+  ...
+  this.methods = this.opts.methods || [
+  this.stack = []; // ？？
+};
+```
+ * 路由名称根据URL生成
+ * 路由名称支持正则
+ * 使用router.get,  router.post等方式注册路由
+
+ 
+ ```js
+ router.post('/register', async (ctx ,next) => {
+    console.log('register');
+    return next();
+});
+ ```
+ * router.register注册请求
+ 
+ ```js
+ Router.prototype.register = function (path, methods, middleware, opts) {
+  opts = opts || {};
+
+  var router = this;
+  var stack = this.stack;
+  ...
+
+  // create route
+  var route = new Layer(path, methods, middleware, {
+   ...
+  });
+
+  ...
+
+  stack.push(route); //将route 存入stack中
+
+  return route;
+};
+ 
+ ```
+ * 通过compose方法将所有子路由的stack组合成 router.routes()
+ 
+ ```js
+ Router.prototype.routes = Router.prototype.middleware = function () {
+  var router = this;
+
+  var dispatch = function dispatch(ctx, next) {
+    ...
+
+    layerChain = matchedLayers.reduce(function(memo, layer) {
+      memo.push(function(ctx, next) {
+        ctx.captures = layer.captures(path, ctx.captures);
+        ctx.params = layer.params(path, ctx.captures, ctx.params);
+        ctx.routerName = layer.name;
+        return next();
+      });
+      return memo.concat(layer.stack); //将多个子router的 stack 合并
+    }, []);
+
+    return compose(layerChain)(ctx, next); // 组合函数 ，返回router注册的第一个方法
+  };
+
+  dispatch.router = this;
+
+  return dispatch;
+};
+ 
+ ```
+
+ * 支持路由嵌套
+ 
+ ```js
+ const router = new Router();
+ const user = new Router();
+ const trade = new Router();
+ // user router
+ user.post('/login', async (ctx ,next) => {
+    console.log('login');
+    return next();
+});
+
+// trade router
+trade.post('/recharge', async (ctx) => {
+    ctx.body = 'ok';
+});
+
+// root router
+ router.use('/user', user.routes(), user.allowedMethods());
+ router.use('/trade', trade.routes(), trade.allowedMethods());
+ 
+ ```
+ * 路由中间件
+ 
+ ```js
+  const app = new Koa();
+ 
+  app.use(router.routes()).use(router.allowedMethods());
+  
+ ``` 
+
+
+
