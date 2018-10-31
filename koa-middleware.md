@@ -109,21 +109,13 @@ use(fn) {
  ```js
  function Router(opts) {
   ...
-  this.methods = this.opts.methods || [
+  this.methods = this.opts.methods || []
   this.stack = []; // ？？
 };
 ```
  * 路由名称根据URL生成
  * 路由名称支持正则
- * 使用router.get,  router.post等方式注册路由
-
  
- ```js
- router.post('/register', async (ctx ,next) => {
-    console.log('register');
-    return next();
-});
- ```
  * router.register注册请求
  
  ```js
@@ -147,6 +139,17 @@ use(fn) {
 };
  
  ```
+ * 使用router.get,  router.post等方式注册路由
+ * router.get,router.post,router.all都将调用router.register
+
+ 
+ ```js
+ router.post('/login', async (ctx ,next) => {
+    console.log('login');
+    return next();
+});
+ ```
+ 
  * 通过compose方法将所有子路由的stack组合成 router.routes()
  
  ```js
@@ -201,8 +204,10 @@ trade.post('/recharge', async (ctx) => {
  * 路由中间件
  
  ```js
-  const app = new Koa();
  
+  const app = new Koa();
+  
+  // 挂在跟路由中间件
   app.use(router.routes()).use(router.allowedMethods());
   
  ``` 
